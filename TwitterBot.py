@@ -1,11 +1,17 @@
 # twitter bot
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from DataFile import username, password, image_path, tweet_text
+#from DataFile import *
 from time import sleep
 import os
 import random
 
+#temp login details
+username = '@gmail.com'
+password = ''
+img_path = 'image'
+tweet_text = 'text'
+#
 def rand_sleep(min = 0):
     return sleep(min + random.randint(1, 6))
 
@@ -23,6 +29,23 @@ class TwitterBot():
         return True
 
      # function logs into account using details in "secrets.py"
+    
+    #clicks a button identified by xpath
+    def clicker(self, xpath):
+        rand_sleep(1)
+        self.check_exists_by_xpath(xpath)
+        btn = self.driver.find_element_by_xpath(xpath)
+        btn.click()
+
+    #sends string to a entity defined by xpath
+    def sender(self,xpath, obj):
+        rand_sleep(1)
+        self.check_exists_by_xpath(xpath)
+        obj = self.driver.find_element_by_xpath(xpath)
+        sleep(2)
+        obj.send_keys(obj)
+
+
     def login(self):
 
         self.driver.get("https://twitter.com/login")
@@ -45,48 +68,27 @@ class TwitterBot():
         if self.driver.current_url == url_not_logged_in:
             print("Username or Password are incorrect")
             exit()
-
+     
+    #tweets an image an text using the values provided   
     def tweeter(self):
 
         self.driver.refresh()
-        ###########Standard way for performing aciton############
-        #                   declaring sleep time                                                       #
-        #                   assigning element value (must be non dynamic)         #
-        #                   check element for existence                                         #
-        #                   assign variable to element                                            #
-        #                   click or send keys to element                                       #
-        #################################################
         # new tweet button
-        rand_sleep(1)
-        xpath = '//*[@id="react-root"]/div/div/div[2]/header/div/div/div/div[1]/div[3]/a/div'
-        self.check_exists_by_xpath(xpath)
-        new_tweet_btn = self.driver.find_element_by_xpath(xpath)
-        new_tweet_btn.click()
+        new_tweet_btn = '//*[@id="react-root"]/div/div/div[2]/header/div/div/div/div[1]/div[3]/a/div'
+        self.clicker(new_tweet_btn)
 
         # Tweeting Image
-        rand_sleep(1)
-        xpath = '//*[@type="file"]'
-        self.check_exists_by_xpath(xpath)
-        tweet_img = self.driver.find_element_by_xpath(xpath)
-        sleep(2)
-        tweet_img.send_keys(image_path)
-
+        tweet_img_field = '//*[@type="file"]'
+        self.sender(tweet_img_field, img_path)
         # Tweeting text
-        rand_sleep(1)
-        xpath = '//div[@aria-label="Tweet text"]'
-        self.check_exists_by_xpath(xpath)
-        tweet_text = self.driver.find_element_by_xpath(xpath)
-        sleep(2)
-        tweet_text.send_keys(tweet_text)
+        tweet_text_field = '//div[@aria-label="Tweet text"]'
+        self.sender(tweet_text_field, tweet_text)
 
         # clicking tweet send button
-        rand_sleep(1)
-        xpath = '//div[@data-testid="tweetButton"]'
-        self.check_exists_by_xpath(xpath)
-        tweet_btn = self.driver.find_element_by_xpath(xpath)
-        sleep(2)
-        tweet_btn.click()
-
+        tweet_btn = '//div[@data-testid="tweetButton"]'
+        self.clicker(tweet_btn)
+        
+    #not working currently
     def accept_follow_requests(self):
 
         self.driver.refresh()
